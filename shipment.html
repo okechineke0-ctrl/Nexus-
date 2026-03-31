@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ship Now | Nexus Freight</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jsbarcode/3.11.6/JsBarcode.all.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+</head>
+
+<body class="bg-zinc-950 text-zinc-200 font-sans">
+
+<!-- NAV -->
+<nav class="bg-zinc-900/80 backdrop-blur border-b border-zinc-800 sticky top-0 z-50">
+  <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+    <h1 class="text-2xl font-semibold">Nexus Freight</h1>
+  </div>
+</nav>
+
+<div class="max-w-7xl mx-auto px-4 py-8">
+
+  <h2 class="text-3xl font-semibold mb-8 text-center">Create Shipment</h2>
+
+  <div class="grid lg:grid-cols-3 gap-6">
+
+    <!-- FORM -->
+    <div class="lg:col-span-2 space-y-6">
+      <div class="bg-zinc-900 border border-zinc-800 rounded-3xl p-5 sm:p-6 space-y-4">
+        <h3 class="font-medium text-lg">Customer Info</h3>
+        <input id="name" placeholder="Full Name" class="w-full bg-zinc-800 p-3.5 rounded-2xl border border-zinc-700 focus:border-teal-500 outline-none text-base">
+        <input id="email" type="email" placeholder="Email Address" class="w-full bg-zinc-800 p-3.5 rounded-2xl border border-zinc-700 focus:border-teal-500 outline-none text-base">
+      </div>
+
+      <div class="bg-zinc-900 border border-zinc-800 rounded-3xl p-5 sm:p-6 space-y-4">
+        <h3 class="font-medium text-lg">Route</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <input id="fromCity" placeholder="From City" class="w-full bg-zinc-800 p-3.5 rounded-2xl border border-zinc-700 focus:border-teal-500 outline-none text-base">
+          <input id="toCity" placeholder="To City" class="w-full bg-zinc-800 p-3.5 rounded-2xl border border-zinc-700 focus:border-teal-500 outline-none text-base">
+        </div>
+      </div>
+
+      <div class="bg-zinc-900 border border-zinc-800 rounded-3xl p-5 sm:p-6 space-y-4">
+        <h3 class="font-medium text-lg">Package</h3>
+        <input id="weight" type="number" step="0.1" placeholder="Weight (kg)" class="w-full bg-zinc-800 p-3.5 rounded-2xl border border-zinc-700 focus:border-teal-500 outline-none text-base">
+      </div>
+
+      <button onclick="getQuote()" 
+              class="w-full bg-teal-500 hover:bg-teal-600 py-4 rounded-3xl font-semibold text-lg transition-all active:scale-[0.98]">
+        Get Quote & Book Shipment
+      </button>
+    </div>
+
+    <!-- SUMMARY -->
+    <div class="bg-zinc-900 border border-zinc-800 rounded-3xl p-6 h-fit">
+      <h3 class="mb-4 font-medium text-lg">Summary</h3>
+      <p id="summary" class="text-sm text-zinc-400 min-h-[120px]">Fill the form and click Get Quote</p>
+    </div>
+
+  </div>
+</div>
+
+<!-- LOADING -->
+<div id="loading" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center z-[60]">
+  <div class="bg-zinc-900 p-8 rounded-3xl text-center border border-zinc-700">
+    <div class="animate-spin rounded-full h-12 w-12 border-4 border-teal-500 border-t-transparent mx-auto mb-4"></div>
+    <p class="text-zinc-300">Processing shipment...</p>
+  </div>
+</div>
+
+<!-- RECEIPT MODAL -->
+<div id="receiptModal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-[50]">
+  <div id="receipt" 
+       class="bg-white text-black p-5 sm:p-8 rounded-3xl w-full max-w-md max-h-[88dvh] overflow-auto shadow-2xl scale-95 opacity-0 transition-all duration-300">
+
+    <!-- HEADER -->
+    <div class="flex justify-between items-start border-b pb-4 mb-6">
+      <div>
+        <h1 class="text-2xl font-bold text-teal-600">Nexus Freight</h1>
+        <p class="text-xs text-gray-500">Shipping Receipt</p>
+      </div>
+      <div class="text-right text-xs">
+        <p><strong>ID:</strong> <span id="r_id" class="font-mono"></span></p>
+        <p><strong>Date:</strong> <span id="r_date"></span></p>
+        <p class="text-green-600 font-bold">PAID</p>
+      </div>
+    </div>
+
+    <!-- DETAILS -->
+    <div class="grid grid-cols-1 gap-5 text-sm mb-6">
+      <div>
+        <h3 class="font-semibold border-b pb-1 mb-2">Customer</h3>
+        <p id="r_name" class="font-medium"></p>
+        <p id="r_email" class="text-gray-600 break-all"></p>
+      </div>
+      <div>
+        <h3 class="font-semibold border-b pb-1 mb-2">Route</h3>
+        <p class="font-medium"><span id="r_from"></span> → <span id="r_to"></span></p>
+      </div>
+    </div>
+
+    <div class="mb-8 text-sm">
+      <h3 class="font-semibold border-b pb-1 mb-2">Shipment</h3>
+      <p class="flex justify-between py-1"><span>Weight</span> <span id="r_weight" class="font-medium"></span> kg</p>
+      <p class="flex justify-between text-xl font-bold text-teal-600">
+        Total: $<span id="r_price"></span>
+      </p>
+    </div>
+
+    <!-- BARCODE -->
+    <div class="text-center mb-8">
+      <svg id="barcode" class="mx-auto"></svg>
+      <p class="text-xs text-gray-500 mt-2">Scan for tracking</p>
+    </div>
+
+    <!-- STAMP -->
+    <div class="text-center mb-8">
+      <div class="inline-block border-4 border-red-600 text-red-600 px-10 py-3 font-bold text-lg rotate-[-8deg]">
+        VERIFIED &amp; PAID
+      </div>
+    </div>
+
+    <div class="text-[10px] text-gray-500 text-center border-t pt-4">
+      Official receipt • Nexus Freight
+    </div>
+
+    <!-- BUTTONS -->
+    <div class="mt-8 flex flex-col gap-3 sticky bottom-0 bg-white pt-4">
+      <button onclick="downloadPDF()" 
+              class="w-full bg-black hover:bg-zinc-800 text-white py-4 rounded-2xl font-medium flex items-center justify-center gap-2 text-base active:scale-95 transition">
+        <i class="fas fa-download"></i> Download PDF
+      </button>
+      <button onclick="closeModal()" 
+              class="w-full bg-zinc-200 hover:bg-zinc-300 text-black py-4 rounded-2xl font-medium text-base active:scale-95 transition">
+        Close
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+// Input references (same as before)
+const nameInput = document.getElementById('name');
+const emailInput = document.getElementById('email');
+const fromCityInput = document.getElementById('fromCity');
+const toCityInput = document.getElementById('toCity');
+const weightInput = document.getElementById('weight');
+
+const summaryEl = document.getElementById('summary');
+const loadingEl = document.getElementById('loading');
+const receiptModal = document.getElementById('receiptModal');
+const receiptEl = document.getElementById('receipt');
+
+const r_id = document.getElementById('r_id');
+const r_date = document.getElementById('r_date');
+const r_name = document.getElementById('r_name');
+const r_email = document.getElementById('r_email');
+const r_from = document.getElementById('r_from');
+const r_to = document.getElementById('r_to');
+const r_weight = document.getElementById('r_weight');
+const r_price = document.getElementById('r_price');
+
+window.onload = () => {
+  const saved = JSON.parse(localStorage.getItem("shipment") || "{}");
+  nameInput.value = saved.name || "";
+  emailInput.value = saved.email || "";
+  fromCityInput.value = saved.from || "";
+  toCityInput.value = saved.to || "";
+  weightInput.value = saved.weight || "";
+};
+
+function saveData() {
+  localStorage.setItem("shipment", JSON.stringify({
+    name: nameInput.value,
+    email: emailInput.value,
+    from: fromCityInput.value,
+    to: toCityInput.value,
+    weight: weightInput.value
+  }));
+}
+
+function getQuote() {
+  saveData();
+
+  if (!fromCityInput.value || !toCityInput.value || !weightInput.value) {
+    alert("Please fill From City, To City, and Weight");
+    return;
+  }
+
+  loadingEl.classList.remove("hidden");
+
+  setTimeout(() => {
+    loadingEl.classList.add("hidden");
+
+    const weight = parseFloat(weightInput.value) || 0;
+    const price = Math.round((weight * 5) + 20);
+
+    summaryEl.innerHTML = `From <strong>${fromCityInput.value}</strong> → <strong>${toCityInput.value}</strong><br>Weight: ${weight} kg<br>Price: <span class="text-teal-400">$${price}</span>`;
+
+    showReceipt(price);
+  }, 1000);
+}
+
+function showReceipt(price) {
+  const data = JSON.parse(localStorage.getItem("shipment") || "{}");
+  const receiptId = "NX-" + Math.floor(100000 + Math.random() * 900000);
+  const dateStr = new Date().toLocaleString();
+
+  r_id.textContent = receiptId;
+  r_date.textContent = dateStr;
+  r_name.textContent = data.name || "N/A";
+  r_email.textContent = data.email || "N/A";
+  r_from.textContent = data.from || "N/A";
+  r_to.textContent = data.to || "N/A";
+  r_weight.textContent = data.weight || "0";
+  r_price.textContent = price;
+
+  JsBarcode("#barcode", receiptId, {
+    format: "CODE128",
+    width: 2.2,
+    height: 65,
+    displayValue: true,
+    fontSize: 13
+  });
+
+  receiptModal.classList.remove("hidden");
+  setTimeout(() => {
+    receiptEl.classList.remove("scale-95", "opacity-0");
+    receiptEl.classList.add("scale-100", "opacity-100");
+  }, 30);
+}
+
+function closeModal() {
+  receiptEl.classList.add("scale-95", "opacity-0");
+  setTimeout(() => receiptModal.classList.add("hidden"), 250);
+}
+
+async function downloadPDF() {
+  try {
+    const receipt = document.getElementById("receipt");
+    const originalBg = receipt.style.backgroundColor;
+    receipt.style.backgroundColor = "#ffffff";
+
+    // Extra delay for mobile rendering
+    await new Promise(resolve => setTimeout(resolve, 150));
+
+    const canvas = await html2canvas(receipt, {
+      scale: 2.8,
+      useCORS: true,
+      backgroundColor: "#ffffff",
+      allowTaint: true,
+      logging: false,
+      width: receipt.scrollWidth,
+      height: receipt.scrollHeight
+    });
+
+    receipt.style.backgroundColor = originalBg;
+
+    const imgData = canvas.toDataURL("image/png", 0.98);
+
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({
+      orientation: "portrait",
+      unit: "mm",
+      format: "a4"
+    });
+
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const margin = 12;
+    const imgWidth = pdfWidth - (margin * 2);
+    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+    pdf.addImage(imgData, "PNG", margin, margin, imgWidth, imgHeight);
+
+    const fileName = `Nexus-Receipt-${r_id.textContent || 'NX'}.pdf`;
+
+    // Improved mobile handling
+    const isMobile = /iPhone|iPad|iPod|Android|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+    if (isMobile) {
+      const blobUrl = pdf.output('bloburl');
+      window.open(blobUrl, '_blank');
+      // Optional: Show instruction
+      setTimeout(() => {
+        alert("PDF opened in new tab.\nUse the browser's share/save option to download it to your Files/Downloads.");
+      }, 800);
+    } else {
+      pdf.save(fileName);
+    }
+
+  } catch (err) {
+    console.error(err);
+    alert("PDF generation had an issue.\n\nTry this:\n1. Use the Share button at the bottom of the receipt and choose 'Print' → 'Save as PDF'\nOr take a screenshot of the receipt.");
+  }
+}
+</script>
+</body>
+</html>
