@@ -1,0 +1,153 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@700&display=swap');
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+.heading-font {
+  font-family: 'Playfair Display', serif;
+}
+
+/* Background */
+.hero-bg {
+  background: linear-gradient(rgba(0,0,0,0.82), rgba(0,0,0,0.92)), 
+              url('https://images.unsplash.com/photo-1494412651409-8963ce7935a7?ixlib=rb-4.0.3&auto=format&fit=crop&q=80') center/cover no-repeat;
+}
+
+/* Login Card */
+.login-card {
+  background: rgba(24, 24, 27, 0.96);
+  backdrop-filter: blur(16px);
+  border: 1px solid #3f3f46;
+  border-radius: 20px;
+  padding: 32px 28px;
+  box-shadow: 0 20px 40px -10px rgb(0 0 0 / 0.5);
+}
+
+/* Logo */
+.logo-icon {
+  width: 52px;
+  height: 52px;
+  background: linear-gradient(135deg, #14b8a6, #22d3ee);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+
+/* Form */
+.form-label {
+  display: block;
+  font-size: 0.85rem;
+  color: #d1d5db;
+  margin-bottom: 6px;
+  font-weight: 500;
+}
+
+.input-wrapper {
+  position: relative;
+}
+
+.input-icon {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #71717a;
+}
+
+.form-input {
+  width: 100%;
+  background: #18181b;
+  border: 1px solid #3f3f46;
+  color: white;
+  padding: 13px 13px 13px 46px;
+  border-radius: 12px;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+}
+
+.form-input:focus {
+  border-color: #14b8a6;
+  box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.15);
+}
+
+.toggle-password {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #71717a;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+/* Submit Button */
+.submit-btn {
+  width: 100%;
+  background: linear-gradient(to right, #14b8a6, #22d3ee);
+  color: white;
+  font-weight: 600;
+  padding: 13px;
+  border-radius: 12px;
+  font-size: 1.05rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.submit-btn:hover {
+  transform: translateY(-1px);
+}
+
+/* SSO Buttons */
+.sso-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border: 1px solid #3f3f46;
+  background: #18181b;
+  color: #d1d5db;
+  padding: 11px;
+  border-radius: 12px;
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+.sso-btn:hover {
+  background: #27272a;
+  border-color: #52525b;
+}
+
+.google-btn { color: #ea4335; }
+.google-btn:hover { color: #ea4335; background: rgba(234, 67, 53, 0.08); }
+
+.microsoft-btn { color: #00a4ef; }
+.microsoft-btn:hover { color: #00a4ef; background: rgba(0, 164, 239, 0.08); }
+
+/* Divider */
+.divider {
+  display: flex;
+  align-items: center;
+  color: #52525b;
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: #3f3f46;
+}
+
+/* Small screen tweaks */
+@media (max-width: 480px) {
+  .login-card {
+    padding: 28px 20px;
+    border-radius: 18px;
+  }
+}

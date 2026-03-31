@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register | Nexus Freight</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="register.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+</head>
+<body class="bg-zinc-950 text-zinc-200 min-h-screen flex items-center justify-center overflow-hidden">
+
+  <!-- Background -->
+  <div class="hero-bg absolute inset-0 z-0"></div>
+
+  <div class="relative z-10 w-full max-w-md mx-auto px-4 py-3">
+    
+    <div class="login-card">
+      
+      <!-- Header -->
+      <div class="flex flex-col items-center mb-4">
+        <div class="logo-icon mb-1">
+          <i class="fa-solid fa-ship text-2xl"></i>
+        </div>
+        <span class="heading-font text-2xl font-bold tracking-tight">Nexus Freight</span>
+        <p class="text-zinc-400 text-[10px] mt-0.5 text-center">Global Shipping • Trusted Logistics</p>
+      </div>
+
+      <h1 class="text-xl font-semibold text-center mb-1 heading-font">Create Account</h1>
+      <p class="text-zinc-400 text-center mb-4 text-xs">Join to manage your shipments</p>
+
+      <!-- Compact Form -->
+      <form id="registerForm" class="space-y-3">
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="form-label">First Name</label>
+            <input type="text" id="firstName" required class="form-input" placeholder="John">
+          </div>
+          <div>
+            <label class="form-label">Last Name</label>
+            <input type="text" id="lastName" required class="form-input" placeholder="Doe">
+          </div>
+        </div>
+
+        <div>
+          <label class="form-label">Email Address</label>
+          <div class="input-wrapper">
+            <i class="fa-solid fa-envelope input-icon"></i>
+            <input type="email" id="email" required class="form-input" placeholder="you@company.com">
+          </div>
+        </div>
+
+        <div>
+          <label class="form-label">Password</label>
+          <div class="input-wrapper">
+            <i class="fa-solid fa-lock input-icon"></i>
+            <input type="password" id="password" required class="form-input" placeholder="••••••••">
+            <button type="button" id="togglePassword" class="toggle-password">
+              <i class="fa-solid fa-eye" id="eyeIcon"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2 text-xs text-zinc-400">
+          <input type="checkbox" id="terms" required class="accent-teal-500">
+          <label for="terms" class="cursor-pointer leading-tight">
+            I agree to the <a href="#" class="text-teal-400 hover:text-teal-300">Terms</a>
+          </label>
+        </div>
+
+        <button type="submit" id="submitBtn" class="submit-btn">
+          <span id="btnText">Create Account</span>
+          <span id="btnSpinner" class="hidden ml-2"><i class="fa-solid fa-spinner fa-spin"></i></span>
+        </button>
+      </form>
+
+      <div class="mt-4 text-center text-xs text-zinc-500">
+        Already have an account? 
+        <a href="login.html" class="text-teal-400 hover:text-teal-300 font-medium">Sign in</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
